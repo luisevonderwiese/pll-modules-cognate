@@ -41,6 +41,11 @@ PLL_EXPORT int pllmod_util_model_exists_mult(const char * model_name)
   return strncasecmp("MULTI", model_name, 4) == 0 ? 1 : 0;
 }
 
+PLL_EXPORT int pllmod_util_model_exists_cog(const char * model_name)
+{
+  return strncasecmp("COG", model_name, 3) == 0 ? 1 : 0;
+}
+
 /**
  * @brief Parses model string (MULTIxx) and returns the number of state (xx)
  */
@@ -48,6 +53,16 @@ PLL_EXPORT unsigned int pllmod_util_model_numstates_mult(const char * model_name
 {
   unsigned int states;
   if (sscanf(model_name, "MULTI%u", &states) == 1)
+    return states;
+  else
+    return 0;
+}
+
+
+PLL_EXPORT unsigned int pllmod_util_model_numstates_cog(const char * model_name)
+{
+  unsigned int states;
+  if (sscanf(model_name, "COG%u", &states) == 1)
     return states;
   else
     return 0;

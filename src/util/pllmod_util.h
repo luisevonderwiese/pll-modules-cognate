@@ -124,7 +124,9 @@ PLL_EXPORT int pllmod_util_model_set_protmix(pll_partition_t * partition, const 
 
 /* functions for working with multistates models */
 PLL_EXPORT int pllmod_util_model_exists_mult(const char * model_name);
+PLL_EXPORT int pllmod_util_model_exists_cog(const char * model_name);
 PLL_EXPORT unsigned int pllmod_util_model_numstates_mult(const char * model_name);
+PLL_EXPORT unsigned int pllmod_util_model_numstates_cog(const char * model_name);
 PLL_EXPORT pll_state_t * pllmod_util_model_charmap_mult(unsigned int states);
 PLL_EXPORT pllmod_subst_model_t * pllmod_util_model_info_mult(const char * model_name);
 
