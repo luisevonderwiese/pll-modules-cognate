@@ -61,49 +61,49 @@ static const int dna_sym_rate_tvm[]   = {0, 1, 2, 3, 1, 4};
 static const pllmod_subst_model_t dna_model_list[DNA_MODELS_COUNT] =
 {
     /*       states  model rates         model freqs      rate symmetries     frequencies sym.           */
-    {"JC",     4,    dna_rates_equal,   dna_freqs_equal, dna_sym_rate_equal, dna_sym_freq_equal, 0 },
+    {"JC",     4,    dna_rates_equal,   dna_freqs_equal, dna_sym_rate_equal, dna_sym_freq_equal, 0, 0 },
 
-    {"K80",    4,    NULL,              dna_freqs_equal, dna_sym_rate_tvts,  dna_sym_freq_equal, 0 },
+    {"K80",    4,    NULL,              dna_freqs_equal, dna_sym_rate_tvts,  dna_sym_freq_equal, 0, 0 },
 
-    {"F81",    4,    dna_rates_equal,   NULL,            dna_sym_rate_equal, dna_sym_freq_free, 0 },
+    {"F81",    4,    dna_rates_equal,   NULL,            dna_sym_rate_equal, dna_sym_freq_free, 0, 0 },
 
-    {"HKY",    4,    NULL,              NULL,            dna_sym_rate_tvts,  dna_sym_freq_free, 0 },
+    {"HKY",    4,    NULL,              NULL,            dna_sym_rate_tvts,  dna_sym_freq_free, 0, 0 },
 
-    {"TN93ef", 4,    NULL,              dna_freqs_equal, dna_sym_rate_tn93,  dna_sym_freq_equal, 0 },
+    {"TN93ef", 4,    NULL,              dna_freqs_equal, dna_sym_rate_tn93,  dna_sym_freq_equal, 0, 0 },
 
-    {"TN93",   4,    NULL,              NULL,            dna_sym_rate_tn93,  dna_sym_freq_free, 0 },
+    {"TN93",   4,    NULL,              NULL,            dna_sym_rate_tn93,  dna_sym_freq_free, 0, 0 },
 
-    {"K81",    4,    NULL,              dna_freqs_equal, dna_sym_rate_k81,   dna_sym_freq_equal, 0 },
+    {"K81",    4,    NULL,              dna_freqs_equal, dna_sym_rate_k81,   dna_sym_freq_equal, 0, 0 },
 
-    {"K81uf",  4,    NULL,              NULL,            dna_sym_rate_k81,   dna_sym_freq_free, 0 },
+    {"K81uf",  4,    NULL,              NULL,            dna_sym_rate_k81,   dna_sym_freq_free, 0, 0 },
 
-    {"TPM2",   4,    NULL,              dna_freqs_equal, dna_sym_rate_tpm2,  dna_sym_freq_equal, 0 },
+    {"TPM2",   4,    NULL,              dna_freqs_equal, dna_sym_rate_tpm2,  dna_sym_freq_equal, 0, 0 },
 
-    {"TPM2uf", 4,    NULL,              NULL,            dna_sym_rate_tpm2,  dna_sym_freq_free, 0 },
+    {"TPM2uf", 4,    NULL,              NULL,            dna_sym_rate_tpm2,  dna_sym_freq_free, 0, 0 },
 
-    {"TPM3",   4,    NULL,              dna_freqs_equal, dna_sym_rate_tpm3,  dna_sym_freq_equal, 0 },
+    {"TPM3",   4,    NULL,              dna_freqs_equal, dna_sym_rate_tpm3,  dna_sym_freq_equal, 0, 0 },
 
-    {"TPM3uf", 4,    NULL,              NULL,            dna_sym_rate_tpm3,  dna_sym_freq_free, 0 },
+    {"TPM3uf", 4,    NULL,              NULL,            dna_sym_rate_tpm3,  dna_sym_freq_free, 0, 0 },
 
-    {"TIM1",   4,    NULL,              dna_freqs_equal, dna_sym_rate_tim1,  dna_sym_freq_equal, 0 },
+    {"TIM1",   4,    NULL,              dna_freqs_equal, dna_sym_rate_tim1,  dna_sym_freq_equal, 0, 0 },
 
-    {"TIM1uf", 4,    NULL,              NULL,            dna_sym_rate_tim1,  dna_sym_freq_free, 0 },
+    {"TIM1uf", 4,    NULL,              NULL,            dna_sym_rate_tim1,  dna_sym_freq_free, 0, 0 },
 
-    {"TIM2",   4,    NULL,              dna_freqs_equal, dna_sym_rate_tim2,  dna_sym_freq_equal, 0 },
+    {"TIM2",   4,    NULL,              dna_freqs_equal, dna_sym_rate_tim2,  dna_sym_freq_equal, 0, 0 },
 
-    {"TIM2uf", 4,    NULL,              NULL,            dna_sym_rate_tim2,  dna_sym_freq_free, 0 },
+    {"TIM2uf", 4,    NULL,              NULL,            dna_sym_rate_tim2,  dna_sym_freq_free, 0, 0 },
 
-    {"TIM3",   4,    NULL,              dna_freqs_equal, dna_sym_rate_tim3,  dna_sym_freq_equal, 0 },
+    {"TIM3",   4,    NULL,              dna_freqs_equal, dna_sym_rate_tim3,  dna_sym_freq_equal, 0, 0 },
 
-    {"TIM3uf", 4,    NULL,              NULL,            dna_sym_rate_tim3,  dna_sym_freq_free, 0 },
+    {"TIM3uf", 4,    NULL,              NULL,            dna_sym_rate_tim3,  dna_sym_freq_free, 0, 0 },
 
-    {"TVMef",  4,    NULL,              dna_freqs_equal, dna_sym_rate_tvm,   dna_sym_freq_equal, 0 },
+    {"TVMef",  4,    NULL,              dna_freqs_equal, dna_sym_rate_tvm,   dna_sym_freq_equal, 0, 0 },
 
-    {"TVM",    4,    NULL,              NULL,            dna_sym_rate_tvm,   dna_sym_freq_free, 0 },
+    {"TVM",    4,    NULL,              NULL,            dna_sym_rate_tvm,   dna_sym_freq_free, 0, 0 },
 
-    {"SYM",    4,    NULL,              dna_freqs_equal, dna_sym_rate_free,  dna_sym_freq_equal, 0 },
+    {"SYM",    4,    NULL,              dna_freqs_equal, dna_sym_rate_free,  dna_sym_freq_equal, 0, 0 },
 
-    {"GTR",    4,    NULL,              NULL,            dna_sym_rate_free,  dna_sym_freq_free, 0 }
+    {"GTR",    4,    NULL,              NULL,            dna_sym_rate_free,  dna_sym_freq_free, 0, 0 }
 };
 
 static const pllmod_subst_model_alias_t dna_model_aliases[] =

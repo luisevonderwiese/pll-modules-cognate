@@ -118,7 +118,7 @@ PLL_EXPORT pllmod_subst_model_t * pllmod_util_model_info_mult(const char * model
   if (strcasecmp("GTR", subst_model_name) == 0)
   {
     return pllmod_util_model_create_custom(model_name, states,
-                                           NULL, NULL, NULL, NULL);
+                                           NULL, NULL, NULL, NULL, 0);
   }
   else if (strcasecmp("MK", subst_model_name) == 0 ||
            strcasecmp("JC", subst_model_name) == 0)
@@ -126,12 +126,12 @@ PLL_EXPORT pllmod_subst_model_t * pllmod_util_model_info_mult(const char * model
     return pllmod_util_model_create_custom(model_name, states,
                                            pllmod_util_get_equal_rates(states),
                                            pllmod_util_get_equal_freqs(states),
-                                           NULL, NULL);
+                                           NULL, NULL, 0);
   }
   else if (strncasecmp("USER", subst_model_name, 4) == 0)
   {
     return pllmod_util_model_create_custom(model_name, states,
-                                           NULL, NULL, subst_model_name+4, NULL);
+                                           NULL, NULL, subst_model_name+4, NULL, 0);
   }
   else
   {

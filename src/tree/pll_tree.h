@@ -242,6 +242,7 @@ typedef struct treeinfo
   double * brlen_scalers;
   double * partition_loglh;
   int * params_to_optimize;
+  pll_bool_t force_zero;
 
   // partition that have been initialized (useful for parallelization)
   unsigned int init_partition_count;
@@ -563,7 +564,7 @@ PLL_EXPORT int pllmod_utree_traverse_apply(pll_unode_t * root,
 
 PLL_EXPORT int pllmod_utree_is_tip(const pll_unode_t * node);
 
-PLL_EXPORT int pllmod_rtree_is_tip(const pll_rnode_t * node); 
+PLL_EXPORT int pllmod_rtree_is_tip(const pll_rnode_t * node);
 
 PLL_EXPORT void pllmod_utree_set_length(pll_unode_t * edge,
                                      double length);
@@ -633,7 +634,8 @@ PLL_EXPORT int pllmod_treeinfo_init_partition(pllmod_treeinfo_t * treeinfo,
                                            int gamma_mode,
                                            double alpha,
                                            const unsigned int * param_indices,
-                                           const int * subst_matrix_symmetries);
+                                           const int * subst_matrix_symmetries,
+                                           pll_bool_t force_zero);
 
 PLL_EXPORT int pllmod_treeinfo_set_active_partition(pllmod_treeinfo_t * treeinfo,
                                                     int partition_index);

@@ -141,6 +141,8 @@ PLL_EXPORT pllmod_treeinfo_t * pllmod_treeinfo_create(pll_unode_t * root,
   treeinfo->pmatrix_valid = (char **) calloc(partitions, sizeof(char*));
   treeinfo->partition_loglh = (double *) calloc(partitions, sizeof(double));
 
+  treeinfo->force_zero = (pll_bool_t) 0;
+
   treeinfo->init_partition_count = 0;
   treeinfo->init_partition_idx = (unsigned int *) calloc(partitions, sizeof(unsigned int));
   treeinfo->init_partitions = (pll_partition_t **) calloc(partitions, sizeof(pll_partition_t *));
@@ -234,7 +236,8 @@ PLL_EXPORT int pllmod_treeinfo_init_partition(pllmod_treeinfo_t * treeinfo,
                                            int gamma_mode,
                                            double alpha,
                                            const unsigned int * param_indices,
-                                           const int * subst_matrix_symmetries)
+                                           const int * subst_matrix_symmetries,
+                                           pll_bool_t force_zero)
 {
   if (!treeinfo)
   {
@@ -328,6 +331,10 @@ PLL_EXPORT int pllmod_treeinfo_init_partition(pllmod_treeinfo_t * treeinfo,
   }
   else
     treeinfo->subst_matrix_symmetries[partition_index] = NULL;
+
+    /* copy substitution rate matrix symmetries, if any */
+
+  treeinfo->force_zero = force_zero;
 
   /* allocate memory for derivative precomputation table */
   unsigned int sites_alloc = partition->sites;
@@ -757,7 +764,6 @@ PLL_EXPORT int pllmod_treeinfo_destroy_partition(pllmod_treeinfo_t * treeinfo,
     free(treeinfo->subst_matrix_symmetries[partition_index]);
     treeinfo->subst_matrix_symmetries[partition_index] = NULL;
   }
-
   if (treeinfo->deriv_precomp[partition_index])
   {
     free(treeinfo->deriv_precomp[partition_index]);

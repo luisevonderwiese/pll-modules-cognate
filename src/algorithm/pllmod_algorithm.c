@@ -1010,6 +1010,13 @@ double pllmod_algo_opt_subst_rates_treeinfo (pllmod_treeinfo_t * treeinfo,
           }
         }
       }
+      if(treeinfo->force_zero)
+      {
+        if (part_free_params > 0)
+        {
+          part_free_params--;
+        }
+      }
       if (part_free_params > max_free_params)
         max_free_params = part_free_params;
 
@@ -1076,17 +1083,23 @@ double pllmod_algo_opt_subst_rates_treeinfo (pllmod_treeinfo_t * treeinfo,
 
         for (j=0; j<subst_params; ++j)
         {
-          if ((unsigned int)symmetries[j] == l)
+          if (!(l == 0 && treeinfo->force_zero))
           {
-            x[part][k] = subst_rates[j];
-            break;
+            if ((unsigned int)symmetries[j] == l)
+            {
+              x[part][k] = subst_rates[j];
+              break;
+            }
           }
         }
         ++l;
       }
       else
       {
-        x[part][k] = subst_rates[k];
+        if (!(k == 0 && treeinfo->force_zero))
+        {
+          x[part][k] = subst_rates[k];
+        }
       }
 
       if (x[part][k] < min_rate)

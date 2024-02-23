@@ -50,6 +50,7 @@ typedef struct subst_model
   const int * rate_sym;         /* substitution matrix symmetries: AC AG AT CG CT GT */
   const int * freq_sym;         /* base frequencies symmetries: A C G T */
   char dynamic_malloc;
+  pll_bool_t force_zero;
 } pllmod_subst_model_t;
 
 /* Substitution model definition */
@@ -91,7 +92,8 @@ PLL_EXPORT pllmod_subst_model_t * pllmod_util_model_create_custom(const char * n
                                                                   const double * rates,
                                                                   const double * freqs,
                                                                   const char * rate_sym_str,
-                                                                  const char * freq_sym_str);
+                                                                  const char * freq_sym_str,
+                                                                  pll_bool_t force_zero);
 PLL_EXPORT void pllmod_util_model_destroy(pllmod_subst_model_t * model);
 PLL_EXPORT pllmod_subst_model_t * pllmod_util_model_clone(const pllmod_subst_model_t * src);
 PLL_EXPORT int * pllmod_util_model_string_to_sym(const char * s);

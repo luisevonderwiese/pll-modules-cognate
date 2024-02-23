@@ -111,6 +111,7 @@ PLL_EXPORT int * pllmod_util_model_string_to_sym(const char * s)
   return sym_list;
 }
 
+
 /**
  * @brief Creates a custom substitution model with given parameters
  *
@@ -128,7 +129,8 @@ PLL_EXPORT pllmod_subst_model_t * pllmod_util_model_create_custom(const char * n
                                                                   const double * rates,
                                                                   const double * freqs,
                                                                   const char * rate_sym_str,
-                                                                  const char * freq_sym_str)
+                                                                  const char * freq_sym_str,
+                                                                  pll_bool_t force_zero)
 {
   if (states <= 1)
   {
@@ -156,6 +158,7 @@ PLL_EXPORT pllmod_subst_model_t * pllmod_util_model_create_custom(const char * n
 
   model->states = states;
   model->dynamic_malloc = 1;
+  model->force_zero = force_zero;
 
   if (name)
     model->name = strdup(name);
@@ -186,6 +189,7 @@ PLL_EXPORT pllmod_subst_model_t * pllmod_util_model_clone(const pllmod_subst_mod
 
   dst->dynamic_malloc = 1;
   dst->states = src->states;
+  dst->force_zero = src->force_zero;
 
   if (src->name)
     dst->name = strdup(src->name);
@@ -198,6 +202,7 @@ PLL_EXPORT pllmod_subst_model_t * pllmod_util_model_clone(const pllmod_subst_mod
 
   if (src->rate_sym)
     dst->rate_sym = clone_int_array(src->rate_sym, rate_count);
+
 
   if (src->freq_sym)
     dst->freq_sym = clone_int_array(src->freq_sym, src->states);

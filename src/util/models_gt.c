@@ -144,15 +144,15 @@ static int gt16_sym_rate_dna4[] =  {      0, 0, 0, 1, 2, 3, 0, 0, 0, 1, 2, 3, 0,
 static const pllmod_subst_model_t gt_model_list[] =
 {
 /*  name    states  model rates         model freqs   rate symmetries   freq. sym.           */
-  {"GT10",       10, NULL,               NULL,              gt_sym_rate_dna4,    NULL, 0 },
-  {"GT10JC-SM",  10, gt_rates_equal_sm,  gt_freqs_equal,    NULL,                NULL, 0 },
-  {"GT10JC",     10, gt_rates_equal,     gt_freqs_equal,    NULL,                NULL, 0 },
-  {"GT10GTR-SM", 10, NULL,               NULL,              gt_sym_rate_free_sm, NULL, 0 },
-  {"GT10HKY",    10, NULL,               NULL,              gt_sym_rate_hky4,    NULL, 0 },
-  {"GT10GTR",    10, NULL,               NULL,              NULL,                NULL, 0 },
-  {"GT16",       16, NULL,               NULL,              gt16_sym_rate_dna4,  NULL, 0 },
-  {"GT16JC",     16, gt16_rates_equal,   gt16_freqs_equal,  NULL,                NULL, 0 },
-  {"GT16GTR",    16, NULL,               NULL,              NULL,                NULL, 0 }
+  {"GT10",       10, NULL,               NULL,              gt_sym_rate_dna4,    NULL, 0, 0 },
+  {"GT10JC-SM",  10, gt_rates_equal_sm,  gt_freqs_equal,    NULL,                NULL, 0, 0 },
+  {"GT10JC",     10, gt_rates_equal,     gt_freqs_equal,    NULL,                NULL, 0, 0 },
+  {"GT10GTR-SM", 10, NULL,               NULL,              gt_sym_rate_free_sm, NULL, 0, 0 },
+  {"GT10HKY",    10, NULL,               NULL,              gt_sym_rate_hky4,    NULL, 0, 0 },
+  {"GT10GTR",    10, NULL,               NULL,              NULL,                NULL, 0, 0 },
+  {"GT16",       16, NULL,               NULL,              gt16_sym_rate_dna4,  NULL, 0, 0 },
+  {"GT16JC",     16, gt16_rates_equal,   gt16_freqs_equal,  NULL,                NULL, 0, 0 },
+  {"GT16GTR",    16, NULL,               NULL,              NULL,                NULL, 0, 0 }
 };
 
 const int GT_MODELS_COUNT = sizeof(gt_model_list) / sizeof(pllmod_subst_model_t);
