@@ -540,8 +540,18 @@ double target_subst_params_func_multi(void * p, double ** x, double * fx,
         size_t l, k = 0;
         for (l = 0; l <= subst_free_params[part]; ++l)
         {
-          double next_value =
-                   (l == (unsigned int)symmetries[subst_params - 1]) ? 1.0 : x[part][k++];
+          double next_value;
+          if (treeinfo->force_zero && k==0)
+          {
+            next_value = PLLMOD_OPT_MIN_SUBST_RATE;
+            k++;
+          }
+          else
+          {
+            next_value = (l == (unsigned int)symmetries[subst_params - 1]) ? 1.0 : x[part][k-1];
+            k++;
+          }
+
           for (j = 0; j < subst_params; j++)
           {
             if ((unsigned int)symmetries[j] == l)
@@ -553,7 +563,15 @@ double target_subst_params_func_multi(void * p, double ** x, double * fx,
       }
       else
       {
-        memcpy (subst_rates, x[part], ((size_t)subst_params - 1) * sizeof(double));
+        if (treeinfo->force_zero)
+        {
+          subst_rates[0] = 0.0;
+          memcpy (&subst_rates[1], x[part], ((size_t)subst_params - 2) * sizeof(double));
+        }
+        else
+        {
+          memcpy (subst_rates, x[part], ((size_t)subst_params - 1) * sizeof(double));
+        }
       }
 
       /* important!! invalidate eigen-decomposition */
