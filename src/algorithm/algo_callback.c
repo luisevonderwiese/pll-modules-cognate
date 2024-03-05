@@ -548,7 +548,7 @@ double target_subst_params_func_multi(void * p, double ** x, double * fx,
           }
           else
           {
-            next_value = (l == (unsigned int)symmetries[subst_params - 1]) ? 1.0 : x[part][k-1];
+            next_value = (l == (unsigned int)symmetries[subst_params - 1]) ? 1.0 : x[part][k];
             k++;
           }
 
