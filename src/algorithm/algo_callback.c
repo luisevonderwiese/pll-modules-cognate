@@ -541,15 +541,23 @@ double target_subst_params_func_multi(void * p, double ** x, double * fx,
         for (l = 0; l <= subst_free_params[part]; ++l)
         {
           double next_value;
-          if (treeinfo->force_zero && k==0)
+          if (treeinfo->force_zero)
           {
-            next_value = PLLMOD_OPT_MIN_SUBST_RATE;
-            k++;
+            if (k == 0)
+            {
+              next_value = PLLMOD_OPT_MIN_SUBST_RATE;
+              k++;
+            }
+            else
+            {
+              next_value = (l == (unsigned int)symmetries[subst_params - 1]) ? 1.0 : x[part][k-1];
+              k++;
+            }
+
           }
           else
           {
-            next_value = (l == (unsigned int)symmetries[subst_params - 1]) ? 1.0 : x[part][k];
-            k++;
+            next_value = (l == (unsigned int)symmetries[subst_params - 1]) ? 1.0 : x[part][k++];
           }
 
           for (j = 0; j < subst_params; j++)
@@ -565,7 +573,7 @@ double target_subst_params_func_multi(void * p, double ** x, double * fx,
       {
         if (treeinfo->force_zero)
         {
-          subst_rates[0] = 0.0;
+          subst_rates[0] = PLLMOD_OPT_MIN_SUBST_RATE;
           memcpy (&subst_rates[1], x[part], ((size_t)subst_params - 2) * sizeof(double));
         }
         else
