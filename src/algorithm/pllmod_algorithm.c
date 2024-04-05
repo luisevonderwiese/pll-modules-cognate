@@ -1068,12 +1068,19 @@ double pllmod_algo_opt_subst_rates_treeinfo (pllmod_treeinfo_t * treeinfo,
     unsigned int subst_params = pllmod_util_subst_rate_count(states);
     int * symmetries = treeinfo->subst_matrix_symmetries[i];
 
+    /*printf("-----------------------------------------------\n");
+    printf("subst_rates:\n");
+    for (int i = 0; i < subst_params; i++) {
+      printf("%f ", subst_rates[i]); // Print each element of the vector
+    }
+    printf("\n");*/
+
     x[part]  = (double *) malloc(sizeof(double) * (subst_free_params[part]));
     bt[part] = bt[0];
     lb[part] = lb[0];
     ub[part] = ub[0];
 
-    l = 0;
+    l = treeinfo->force_zero ? 1 : 0;
     for (k = 0; k < subst_free_params[part]; ++k)
     {
       if (symmetries)
@@ -1083,23 +1090,17 @@ double pllmod_algo_opt_subst_rates_treeinfo (pllmod_treeinfo_t * treeinfo,
 
         for (j=0; j<subst_params; ++j)
         {
-          if (!(l == 0 && treeinfo->force_zero))
+          if ((unsigned int)symmetries[j] == l)
           {
-            if ((unsigned int)symmetries[j] == l)
-            {
-              x[part][k] = subst_rates[j];
-              break;
-            }
+            x[part][k] = subst_rates[j];
+            break;
           }
         }
         ++l;
       }
       else
       {
-        if (!(k == 0 && treeinfo->force_zero))
-        {
-          x[part][k] = subst_rates[k];
-        }
+        x[part][k] = subst_rates[k];
       }
 
       if (x[part][k] < min_rate)
@@ -1107,6 +1108,13 @@ double pllmod_algo_opt_subst_rates_treeinfo (pllmod_treeinfo_t * treeinfo,
       else if (x[part][k] > max_rate)
         x[part][k] = max_rate;
     }
+    /*printf("x:\n");
+    for (int i = 0; i < subst_free_params[part]; i++) {
+      printf("%f ", x[part][i]); // Print each element of the vector
+    }
+    printf("\n");
+
+    printf("-----------------------------------------------\n");*/
 
     part++;
   }

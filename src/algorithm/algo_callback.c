@@ -533,6 +533,14 @@ double target_subst_params_func_multi(void * p, double ** x, double * fx,
       unsigned int subst_params       = (states * (states-1))/2;
       double *subst_rates             = partition->subst_params[params_index];
 
+      /*printf("=========================================================\n");
+
+      printf("x:\n");
+      for (int i = 0; i < subst_free_params[part]; i++) {
+        printf("%f ", x[part][i]); // Print each element of the vector
+      }
+      printf("\n");*/
+
       /* update subst rates */
       if (symmetries)
       {
@@ -581,6 +589,14 @@ double target_subst_params_func_multi(void * p, double ** x, double * fx,
           memcpy (subst_rates, x[part], ((size_t)subst_params - 1) * sizeof(double));
         }
       }
+
+      /*printf("subst_rates:\n");
+      for (int i = 0; i < subst_params; i++) {
+        printf("%f ", subst_rates[i]); // Print each element of the vector
+      }
+      printf("\n");
+
+      printf("=========================================================\n");*/
 
       /* important!! invalidate eigen-decomposition */
       partition->eigen_decomp_valid[params_index] = 0;
