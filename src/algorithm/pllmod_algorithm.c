@@ -1068,13 +1068,6 @@ double pllmod_algo_opt_subst_rates_treeinfo (pllmod_treeinfo_t * treeinfo,
     unsigned int subst_params = pllmod_util_subst_rate_count(states);
     int * symmetries = treeinfo->subst_matrix_symmetries[i];
 
-    /*printf("-----------------------------------------------\n");
-    printf("subst_rates:\n");
-    for (int i = 0; i < subst_params; i++) {
-      printf("%f ", subst_rates[i]); // Print each element of the vector
-    }
-    printf("\n");*/
-
     x[part]  = (double *) malloc(sizeof(double) * (subst_free_params[part]));
     bt[part] = bt[0];
     lb[part] = lb[0];
@@ -1108,13 +1101,6 @@ double pllmod_algo_opt_subst_rates_treeinfo (pllmod_treeinfo_t * treeinfo,
       else if (x[part][k] > max_rate)
         x[part][k] = max_rate;
     }
-    /*printf("x:\n");
-    for (int i = 0; i < subst_free_params[part]; i++) {
-      printf("%f ", x[part][i]); // Print each element of the vector
-    }
-    printf("\n");
-
-    printf("-----------------------------------------------\n");*/
 
     part++;
   }
@@ -1165,7 +1151,7 @@ double pllmod_algo_opt_frequencies_treeinfo (pllmod_treeinfo_t * treeinfo,
 {
   const double factor = bfgs_factor > 0. ? bfgs_factor : PLLMOD_ALGO_BFGS_FACTR;
 
-  unsigned int i, j;
+  unsigned int i, j, k;
 
   double cur_logl;
   double **x, **lb, **ub;
@@ -1175,26 +1161,58 @@ double pllmod_algo_opt_frequencies_treeinfo (pllmod_treeinfo_t * treeinfo,
   unsigned int part_count = 0;
   unsigned int max_free_params = 0;
 
+  /* check how many partitions have base freqs to optimize */
+  for (i = 0; i < treeinfo->partition_count; ++i)
+  {
+    if (treeinfo->params_to_optimize[i] & PLLMOD_OPT_PARAM_FREQUENCIES)
+      part_count++;
+  }
+
+    /* nothing to optimize */
+  if (!part_count)
+    return -1 * pllmod_treeinfo_compute_loglh(treeinfo, 0);
+
+
+  num_free_params = (unsigned int *) calloc(part_count, sizeof(unsigned int));
+
   /* check how many frequencies have to be optimized */
+  unsigned int part = 0;
   for (i = 0; i < treeinfo->partition_count; ++i)
   {
     if (treeinfo->params_to_optimize[i] & PLLMOD_OPT_PARAM_FREQUENCIES)
     {
-      part_count++;
-
       /* remote partition -> skip */
       if (!treeinfo->partitions[i])
-        continue;
+      {
+        part++;
+	continue;
+      }
 
-      unsigned int nfree_params = treeinfo->partitions[i]->states - 1;
+      int * symmetries = treeinfo->base_freq_symmetries[i];
+      unsigned int nfree_params = 0;
+      if (!symmetries)
+      {
+        nfree_params = treeinfo->partitions[i]->states - 1;
+      }
+      else
+      {
+	for (k=0; k<treeinfo->partitions[i]->states - 1; ++k)
+        {
+          if ((unsigned int)symmetries[k] > nfree_params)
+          {
+            /* check that symmetries vector is correctly formatted */
+            assert((unsigned int)symmetries[k] == (nfree_params+1));
+            ++nfree_params;
+          }
+        }
+      }
       if (nfree_params > max_free_params)
         max_free_params = nfree_params;
+      
+      num_free_params[part] = nfree_params;
+      part++;
     }
   }
-
-  /* nothing to optimize */
-  if (!part_count)
-    return -1 * pllmod_treeinfo_compute_loglh(treeinfo, 0);
 
   /* IMPORTANT: we need to know max_free_params among all threads! */
   if (treeinfo->parallel_reduce_cb)
@@ -1209,7 +1227,6 @@ double pllmod_algo_opt_frequencies_treeinfo (pllmod_treeinfo_t * treeinfo,
   lb = (double **) malloc(sizeof(double*) * part_count);
   ub = (double **) malloc(sizeof(double*) * part_count);
   bt = (int **)    malloc(sizeof(int*)    * part_count);
-  num_free_params = (unsigned int *) calloc(sizeof(unsigned int), part_count);
 
   /* those values are the same for all partitions */
   lb[0] = (double *) malloc(sizeof(double) * (max_free_params));
@@ -1231,7 +1248,7 @@ double pllmod_algo_opt_frequencies_treeinfo (pllmod_treeinfo_t * treeinfo,
                                                        sizeof(unsigned int));
 
   /* now iterate over partitions and collect current frequencies values */
-  unsigned int part = 0;
+  part = 0;
   for (i = 0; i < treeinfo->partition_count; ++i)
   {
     // skip partition where no freqs optimization is needed
@@ -1249,9 +1266,8 @@ double pllmod_algo_opt_frequencies_treeinfo (pllmod_treeinfo_t * treeinfo,
     pll_partition_t * partition = treeinfo->partitions[i];
     double * frequencies = partition->frequencies[params_index];
     unsigned int states    = partition->states;
+    int * symmetries = treeinfo->base_freq_symmetries[i];
     unsigned int cur_index;
-
-    num_free_params[part] = states - 1;
 
     x[part]  = (double *) malloc(sizeof(double) * (num_free_params[part]));
     bt[part] = bt[0];
@@ -1278,14 +1294,41 @@ double pllmod_algo_opt_frequencies_treeinfo (pllmod_treeinfo_t * treeinfo,
 
     assert(fixed_freq_state < states);
     assert(frequencies[fixed_freq_state] > 0.);
-
+    
+    unsigned int inner;
     cur_index = 0;
-    for (j = 0; j < states; ++j)
+    for (j = 0; j <= num_free_params[part]; ++j)
     {
-      if (j != fixed_freq_state)
+      if (symmetries)
       {
-        x[part][cur_index] = frequencies[j] / frequencies[fixed_freq_state];
-        cur_index++;
+	for (inner=0; inner<states; ++inner)
+        {
+          if ((unsigned int)symmetries[inner] == j)
+          {
+            if (inner != fixed_freq_state)
+            {
+              x[part][cur_index] = frequencies[inner] / frequencies[fixed_freq_state];
+	      cur_index++;
+	    }
+	    else
+            {
+	       opt_params.fixed_var_index[part] = j;
+	    }
+	    break;
+          }
+        }
+      }
+      else
+      {
+	if (j != fixed_freq_state)
+        {
+          x[part][cur_index] = frequencies[j] / frequencies[fixed_freq_state];
+          cur_index++;
+	}
+	else
+	{
+	  opt_params.fixed_var_index[part] = fixed_freq_state;
+	}
       }
     }
 
@@ -1298,13 +1341,13 @@ double pllmod_algo_opt_frequencies_treeinfo (pllmod_treeinfo_t * treeinfo,
       printf("\n");
 #endif
 
-    opt_params.fixed_var_index[part] = fixed_freq_state;
+    //opt_params.fixed_var_index[part] = fixed_freq_state;
 
     part++;
   }
-
   assert(part == part_count);
-
+  
+  opt_params.num_free_params = num_free_params;
   cur_logl = pllmod_opt_minimize_lbfgsb_multi(part_count, x, lb, ub, bt,
                                               num_free_params,
                                               max_free_params,

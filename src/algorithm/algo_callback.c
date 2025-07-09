@@ -642,13 +642,14 @@ double target_freqs_func_multi(void * p, double ** x, double * fx,
   unsigned int num_parts            = params->num_opt_partitions;
   unsigned int params_index         = params->params_index;
   unsigned int * fixed_freq_state   = params->fixed_var_index;
+  unsigned int * num_free_params    = params->num_free_params;
 
   double score = -INFINITY;
 
   /* any partitions which have not converged yet? */
   double unconverged_flag = 0.;
 
-  size_t i, j;
+  size_t i, j, k;
   size_t part = 0;
   for (i = 0; i < treeinfo->partition_count; ++i)
   {
@@ -672,6 +673,7 @@ double target_freqs_func_multi(void * p, double ** x, double * fx,
         continue;
       }
 
+      int * symmetries                = treeinfo->base_freq_symmetries[i];
       unsigned int states             = partition->states;
       double * freqs                  = partition->frequencies[params_index];
 
@@ -680,21 +682,49 @@ double target_freqs_func_multi(void * p, double ** x, double * fx,
       unsigned int cur_index;
 
       /* update frequencies */
-      for (j = 0; j < (states - 1); ++j)
+    
+      for (j = 0; j < num_free_params[part]; ++j)
       {
         assert(x[part][j] == x[part][j]);
         sum_ratios += x[part][j];
       }
       cur_index = 0;
-      for (j = 0; j < states; ++j)
+      if (symmetries)
       {
-        if (j != fixed)
+	for (j = 0; j <= num_free_params[part]; ++j)
         {
-          freqs[j] = x[part][cur_index] / sum_ratios;
-          cur_index++;
+          if (j != fixed)
+          {
+            for (k = 0; k < states; ++k)
+            {
+	      if ((unsigned int)symmetries[k] == j)
+	      {
+	        freqs[k] = x[part][cur_index] / sum_ratios;
+	      }
+	    }
+	    cur_index++;
+	  }
+ 	}
+	for (k = 0; k < states; ++k)
+        {
+          if ((unsigned int)symmetries[k] == fixed)
+          {
+            freqs[k] = 1.0 / sum_ratios;
+          }
         }
       }
-      freqs[fixed] = 1.0 / sum_ratios;
+      else
+      {
+        for (j = 0; j <= num_free_params[part]; ++j)
+        {
+          if (j != fixed)
+          {
+            freqs[j] = x[part][cur_index] / sum_ratios;
+            cur_index++;
+          }
+        }
+        freqs[fixed] = 1.0 / sum_ratios;
+      }
 
 #ifdef DEBUG
       cur_index = 0;

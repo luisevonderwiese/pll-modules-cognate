@@ -135,6 +135,7 @@ PLL_EXPORT pllmod_treeinfo_t * pllmod_treeinfo_create(pll_unode_t * root,
   treeinfo->gamma_mode = (int *) calloc(partitions, sizeof(int));
   treeinfo->param_indices = (unsigned int **) calloc(partitions, sizeof(unsigned int*));
   treeinfo->subst_matrix_symmetries = (int **) calloc(partitions, sizeof(int*));
+  treeinfo->base_freq_symmetries = (int **) calloc(partitions, sizeof(int*));
   treeinfo->branch_lengths = (double **) calloc(partitions, sizeof(double*));
   treeinfo->deriv_precomp = (double **) calloc(partitions, sizeof(double*));
   treeinfo->clv_valid = (char **) calloc(partitions, sizeof(char*));
@@ -158,7 +159,8 @@ PLL_EXPORT pllmod_treeinfo_t * pllmod_treeinfo_create(pll_unode_t * root,
 
   /* check memory allocation */
   if (!treeinfo->partitions || !treeinfo->alphas || !treeinfo->param_indices ||
-      !treeinfo->subst_matrix_symmetries || !treeinfo->branch_lengths ||
+      !treeinfo->subst_matrix_symmetries || !treeinfo->base_freq_symmetries || 
+      !treeinfo->branch_lengths ||
       !treeinfo->deriv_precomp || !treeinfo->clv_valid || !treeinfo->pmatrix_valid ||
       !treeinfo->linked_branch_lengths || !treeinfo->partition_loglh ||
       !treeinfo->gamma_mode || !treeinfo->init_partition_idx ||
@@ -237,6 +239,7 @@ PLL_EXPORT int pllmod_treeinfo_init_partition(pllmod_treeinfo_t * treeinfo,
                                            double alpha,
                                            const unsigned int * param_indices,
                                            const int * subst_matrix_symmetries,
+					   const int * base_freq_symmetries,
                                            pll_bool_t force_zero)
 {
   if (!treeinfo)
@@ -332,7 +335,27 @@ PLL_EXPORT int pllmod_treeinfo_init_partition(pllmod_treeinfo_t * treeinfo,
   else
     treeinfo->subst_matrix_symmetries[partition_index] = NULL;
 
-    /* copy substitution rate matrix symmetries, if any */
+    /* copy base frequency symmetries, if any */
+  if (base_freq_symmetries)
+  {
+    const unsigned int symm_size = (partition->states - 1) * sizeof(int);
+    treeinfo->base_freq_symmetries[partition_index] =
+                               (int *) malloc(symm_size);
+
+    /* check memory allocation */
+    if (!treeinfo->base_freq_symmetries[partition_index])
+    {
+      pllmod_set_error(PLL_ERROR_MEM_ALLOC,
+                    "Cannot allocate memory for substitution scheme\n");
+      return PLL_FAILURE;
+    }
+
+    memcpy(treeinfo->base_freq_symmetries[partition_index],
+           base_freq_symmetries,
+           symm_size);
+  }
+  else
+    treeinfo->base_freq_symmetries[partition_index] = NULL;
 
   treeinfo->force_zero = force_zero;
 
@@ -764,6 +787,11 @@ PLL_EXPORT int pllmod_treeinfo_destroy_partition(pllmod_treeinfo_t * treeinfo,
     free(treeinfo->subst_matrix_symmetries[partition_index]);
     treeinfo->subst_matrix_symmetries[partition_index] = NULL;
   }
+  if (treeinfo->base_freq_symmetries[partition_index])
+  {
+    free(treeinfo->base_freq_symmetries[partition_index]);
+    treeinfo->base_freq_symmetries[partition_index] = NULL;
+  }
   if (treeinfo->deriv_precomp[partition_index])
   {
     free(treeinfo->deriv_precomp[partition_index]);
@@ -796,6 +824,9 @@ PLL_EXPORT void pllmod_treeinfo_destroy(pllmod_treeinfo_t * treeinfo)
 
   if(treeinfo->subst_matrix_symmetries)
     free(treeinfo->subst_matrix_symmetries);
+
+  if(treeinfo->base_freq_symmetries)
+    free(treeinfo->base_freq_symmetries);
 
   if(treeinfo->constraint)
     free(treeinfo->constraint);
