@@ -1196,7 +1196,7 @@ double pllmod_algo_opt_frequencies_treeinfo (pllmod_treeinfo_t * treeinfo,
       }
       else
       {
-	for (k=0; k<treeinfo->partitions[i]->states - 1; ++k)
+	for (k=0; k<treeinfo->partitions[i]->states; ++k)
         {
           if ((unsigned int)symmetries[k] > nfree_params)
           {

@@ -338,7 +338,7 @@ PLL_EXPORT int pllmod_treeinfo_init_partition(pllmod_treeinfo_t * treeinfo,
     /* copy base frequency symmetries, if any */
   if (base_freq_symmetries)
   {
-    const unsigned int symm_size = (partition->states - 1) * sizeof(int);
+    const unsigned int symm_size = partition->states * sizeof(int);
     treeinfo->base_freq_symmetries[partition_index] =
                                (int *) malloc(symm_size);
 
