@@ -683,14 +683,37 @@ double target_freqs_func_multi(void * p, double ** x, double * fx,
 
       /* update frequencies */
     
-      for (j = 0; j < num_free_params[part]; ++j)
-      {
-        assert(x[part][j] == x[part][j]);
-        sum_ratios += x[part][j];
-      }
       cur_index = 0;
       if (symmetries)
       {
+	unsigned int fixed_occurrences;
+	fixed_occurrences = 0;
+	cur_index = 0;
+	for (j = 0; j <= num_free_params[part]; ++j)
+      	{
+          if (j == fixed)
+          {
+            for (k = 0; k < states; ++k)
+	    {
+              if ((unsigned int)symmetries[k] == j)
+              {
+                fixed_occurrences += 1;
+              }
+	    }
+            continue;
+	  }
+          assert(x[part][cur_index] == x[part][cur_index]);
+	  for (k = 0; k < states; ++k)
+          {
+            if ((unsigned int)symmetries[k] == j)
+	    {
+	      sum_ratios += x[part][cur_index];
+            }
+	  }
+	  cur_index++;
+        }
+        cur_index = 0;
+
 	for (j = 0; j <= num_free_params[part]; ++j)
         {
           if (j != fixed)
@@ -709,12 +732,19 @@ double target_freqs_func_multi(void * p, double ** x, double * fx,
         {
           if ((unsigned int)symmetries[k] == fixed)
           {
-            freqs[k] = 1.0 / sum_ratios;
+            freqs[k] = 1.0 / (sum_ratios * fixed_occurrences);
           }
         }
       }
       else
       {
+        for (j = 0; j < states - 1; ++j)
+        {
+          assert(x[part][j] == x[part][j]);
+          sum_ratios += x[part][j];
+        }
+        cur_index = 0;
+
         for (j = 0; j <= num_free_params[part]; ++j)
         {
           if (j != fixed)
